@@ -1,5 +1,10 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+
+var mdAutenticacion = require('../middlewares/autenticación');
+
+var SEED = require('../config/config').SEED;
 
 var app = express();
 
@@ -30,7 +35,7 @@ app.get('/', (req, res, next) => {
 // ==============================================================
 // Actualizar usuario
 // ==============================================================
-app.put('/:id', (req, res) => {
+app.put('/:id', mdAutenticacion.verificarToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
@@ -78,7 +83,7 @@ app.put('/:id', (req, res) => {
 // ==============================================================
 // Crear un nuevo usuario
 // ==============================================================
-app.post('/', (req, res) => {
+app.post('/', mdAutenticacion.verificarToken, (req, res) => {
     var body = req.body;
 
     var usuario = new Usuario({
@@ -100,7 +105,8 @@ app.post('/', (req, res) => {
 
         res.status(201).json({
             ok: true,
-            usuario: usuarioGuardado
+            usuario: usuarioGuardado,
+            usuariotoken: req.usuario
         });
     });
 });
@@ -108,7 +114,7 @@ app.post('/', (req, res) => {
 // ==============================================================
 // Eliminar usuario por id
 // ==============================================================
-app.delete('/:id', (req, res) => {
+app.delete('/:id', mdAutenticacion.verificarToken, (req, res) => {
     var id = req.params.id;
 
     Usuario.findByIdAndRemove(id, (err, usuarioEliminado) => {
