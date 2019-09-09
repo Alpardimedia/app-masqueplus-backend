@@ -1,8 +1,9 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
+var moment = require('moment');
 
-var mdAutenticacion = require('../middlewares/autenticación');
+var mdAutenticacion = require('../middlewares/autenticacion');
 
 var SEED = require('../config/config').SEED;
 
@@ -14,7 +15,12 @@ var Usuario = require('../models/usuario');
 // Obtener todos los usuarios
 // ==============================================================
 app.get('/', (req, res, next) => {
-    Usuario.find({}, 'nombre email img role')
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
+    Usuario.find({}, 'nombre usuario email codigo_postal fecha_nacimiento img role')
+        .skip(desde)
+        .limit(5)
         .exec(
             (err, usuarios) => {
                 if (err) {
@@ -24,9 +30,19 @@ app.get('/', (req, res, next) => {
                     });
                 }
 
-                res.status(200).json({
-                    ok: true,
-                    usuarios: usuarios
+                Usuario.count({}, (err, contador) => {
+                    if (err) {
+                        return res.status(400).json({
+                            ok: false,
+                            errors: err
+                        });
+                    }
+
+                    res.status(200).json({
+                        ok: true,
+                        total: contador,
+                        usuarios: usuarios
+                    });
                 });
             }
         );
@@ -79,36 +95,59 @@ app.put('/:id', mdAutenticacion.verificarToken, (req, res) => {
     });
 });
 
-
 // ==============================================================
 // Crear un nuevo usuario
 // ==============================================================
-app.post('/', mdAutenticacion.verificarToken, (req, res) => {
+app.post('/', (req, res) => {
     var body = req.body;
 
-    var usuario = new Usuario({
-        nombre: body.nombre,
-        email: body.email,
-        password: bcrypt.hashSync(body.password),
-        img: body.img,
-        role: body.role
-    });
+    var fecha = new Date();
+    var anoActual = fecha.getFullYear();
 
-    usuario.save((err, usuarioGuardado) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'Error al crear el usuario',
-                errors: err
-            });
-        }
+    var limiteEdad = 14;
 
-        res.status(201).json({
-            ok: true,
-            usuario: usuarioGuardado,
-            usuariotoken: req.usuario
+    var dia = body.dia;
+    var mes = body.mes;
+    var ano = body.ano;
+
+    edad = anoActual - ano;
+
+    if (edad <= limiteEdad) {
+        res.status(400).json({
+            ok: false,
+            mensaje: 'No puedes acceder a la plataforma. Solo los usuarios mayores de 14 años pueden acceder.',
+            errors: { mensaje: 'No tienes acceso' }
         });
-    });
+    } else {
+        var fecha_nacimiento = dia + '/' + mes + '/' + ano;
+
+        var usuario = new Usuario({
+            nombre: body.nombre,
+            usuario: body.nombre.toLowerCase().replace(' ', ''),
+            email: body.email,
+            password: bcrypt.hashSync(body.password),
+            img: body.img,
+            codigo_postal: body.codigo_postal,
+            fecha_nacimiento: fecha_nacimiento,
+            role: body.role
+        });
+
+        usuario.save((err, usuarioGuardado) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'Error al crear el usuario',
+                    errors: err
+                });
+            }
+
+            res.status(201).json({
+                ok: true,
+                usuario: usuarioGuardado,
+                usuariotoken: req.usuario
+            });
+        });
+    }
 });
 
 // ==============================================================

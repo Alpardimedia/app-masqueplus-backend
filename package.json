@@ -1,24 +1,29 @@
 {
-  "name": "backend-server",
-  "version": "1.0.0",
-  "description": "Servidor de la aplicación de Másqueplus: Red Social Deportiva ",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Másqueplus: Equipo de desarrollo y software",
-  "license": "ISC",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1",
-    "google-auth-library": "^5.2.0",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.6.11",
-    "mongoose-unique-validator": "^2.0.3"
-  },
-  "devDependencies": {
-    "nodemon": "^1.19.1"
-  }
+    "name": "backend-server",
+    "version": "1.0.0",
+    "description": "Servidor de la aplicación de Másqueplus: Red Social Deportiva ",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Másqueplus: Equipo de desarrollo y software",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.19.0",
+        "cors": "^2.8.5",
+        "express": "^4.17.1",
+        "express-fileupload": "^1.1.5",
+        "google-auth-library": "^5.2.0",
+        "jsonwebtoken": "^8.5.1",
+        "mkdirp": "^0.5.1",
+        "moment": "^2.24.0",
+        "mongoose": "^5.6.11",
+        "mongoose-unique-validator": "^2.0.3",
+        "nodemailer": "^6.3.0"
+    },
+    "devDependencies": {
+        "nodemon": "^1.19.1"
+    }
 }

@@ -50,9 +50,7 @@ app.post('/google', async(req, res) => {
             });
         });
 
-
     Usuario.findOne({ email: googleUser.email }, (err, usuarioDB) => {
-
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -89,7 +87,6 @@ app.post('/google', async(req, res) => {
             usuario.google = true;
             usuario.password = ':)';
 
-
             usuario.save((err, usuarioDB) => {
 
                 var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 }); // 4 horas
@@ -98,14 +95,12 @@ app.post('/google', async(req, res) => {
                     ok: true,
                     usuario: usuarioDB,
                     token: token,
-                    id: usuarioDB._id
+                    id: usuarioDB
                 });
 
             });
 
         }
-
-
     });
 });
 
@@ -115,7 +110,8 @@ app.post('/google', async(req, res) => {
 app.post('/', (req, res) => {
     var body = req.body;
 
-    Usuario.findOne({ email: body.email }, (err, usuario) => {
+    Usuario.findOne({ email: body.email }, (err, usuarioDB) => {
+
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -124,34 +120,37 @@ app.post('/', (req, res) => {
             });
         }
 
-        if (!usuario) {
+        if (!usuarioDB) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Credenciales incorrectos',
+                mensaje: 'Credenciales incorrectas',
                 errors: err
             });
         }
 
-        if (!bcrypt.compareSync(body.password, usuario.password)) {
+        if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Credenciales incorrectos',
+                mensaje: 'Credenciales incorrectas',
                 errors: err
             });
         }
 
-        // Crear un token
-        usuario.password = ':)';
+        // Crear un token!!!
+        usuarioDB.password = ':)';
 
-        var token = jwt.sign({ usuario: usuario }, SEED, { expiresIn: 14400 });
+        var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 }); // 4 horas
 
         res.status(200).json({
             ok: true,
-            usuario: usuario,
+            usuario: usuarioDB,
             token: token,
-            id: usuario.id
+            id: usuarioDB._id
         });
-    });
+
+    })
+
+
 });
 
 module.exports = app;

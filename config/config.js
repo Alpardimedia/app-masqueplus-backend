@@ -11,5 +11,5 @@ module.exports.SEED = 'starwars-monkey-iloveyou-whatever-margaretthatcheris110-u
 // ==============================================================
 // Google
 // ==============================================================
-module.exports.GOOGLE_CLIENT_ID = '612930200355-vguoe6jsgc03sqff8rb6uu0v8dhig7es.apps.googleusercontent.com';
-module.exports.GOOGLE_SECRET = 'MhDsQIjM2bVDtxl3ELepWs41';
+module.exports.GOOGLE_CLIENT_ID = '681141320644-3hcccd6ai3pjshkt6uhhq30lqqkjqtio.apps.googleusercontent.com';
+module.exports.GOOGLE_SECRET = '_anThiRi7eZNrQ4CzZUYXWT6';
